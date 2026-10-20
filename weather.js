@@ -32,7 +32,7 @@
   $('weather-city').textContent=c?.name||'Escolher cidade';
   $('weather-icon').innerHTML=weatherIcon(d?weather.icon:(actualDay()===false?'moon':'cloud'));
   $('weather-button').classList.toggle('loading',state.loading);$('weather-button').classList.toggle('stale',!!stale);
-  $('weather-button').setAttribute('aria-label',`${c?.name||'Selecionar cidade'} · ${d?`${Math.round(d.current.temperature_2m)} graus, ${weather.text}`:'meteorologia indisponível'}${stale?' · dados desatualizados':''}. Abrir definições`);
+  $('weather-button').setAttribute('aria-label',`${c?.name||'Selecionar cidade'} · ${d?`${Math.round(d.current.temperature_2m)} graus, ${weather.text}`:'meteorologia indisponível'}${stale?' · dados desatualizados':''}. Abrir MeteoNL`);
   $('selected-city-name').textContent=c?[c.name,c.admin1,c.country].filter(Boolean).join(' · '):'Por selecionar';
   let status=state.loading?'A atualizar meteorologia…':!d?'Sem dados de meteorologia. Tente atualizar.':`${Math.round(d.current.temperature_2m)} °C · ${weather.text} · ${stale?'Dados guardados':'Atualizado'} às ${clock(state.fetchedAt,c.timezone)}`;
   if(state.error)status+=d?' · Sem ligação neste momento.':' Verifique a ligação à Internet.';
@@ -75,8 +75,8 @@
  $('city-form').addEventListener('submit',e=>{e.preventDefault();const q=$('city-search').value.trim();if(q.length>=2)search(q)});
  $('environment-mode').addEventListener('change',()=>{state.mode=$('environment-mode').value;save();changed()});
  $('weather-refresh').addEventListener('click',refresh);
- $('weather-button').addEventListener('click',()=>window.showPopup('settings-dialog'));
- window.CasaEnvironment={isDay,darkness,electricOpacity:(r,rooms=[])=>CORE.electricOpacity(r,isDay(),rooms),roomDescription,refresh,getState:()=>({...state})};
+ $('weather-button').addEventListener('click',()=>window.CasaMeteoBridge?.open());
+ window.CasaEnvironment={isDay,darkness,electricOpacity:(r,rooms=[])=>CORE.electricOpacity(r,isDay(),rooms),roomDescription,refresh,selectCity,getState:()=>({...state})};
  render();
  if(state.city){$('city-search').value=state.city.name;refresh()}else search('Figueira da Foz',true);
  setInterval(()=>{changed();if(state.city&&!state.loading&&Date.now()-state.fetchedAt>900000)refresh()},60000);
