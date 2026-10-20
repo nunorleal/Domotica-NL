@@ -84,3 +84,20 @@ body:before{background:linear-gradient(var(--street-shade-top),var(--street-shad
 .all-status{font-size:12px;line-height:1.7;color:#087e75;margin:16px 0 0;overflow-wrap:anywhere}.all-status.error{color:#a7402c}.all-status[hidden]{display:none}.all-actions button:disabled{opacity:.5;cursor:wait}
 
 .all-status{white-space:pre-line}
+
+/* Lamp associations share Cloud credentials, with independent IDs/channels. */
+.shelly-light-section{margin-top:26px}.shelly-light-options{display:grid;grid-template-columns:86px minmax(0,1fr);gap:14px}.shelly-light-options select{width:100%;min-height:46px;padding:11px 9px;border:1px solid #d4dfcf;border-radius:10px;background:#f5f7f0;color:var(--ink);font:inherit;font-size:12px}.light-mapping-state{margin-top:12px;color:var(--teal)}
+
+#all-light-status{white-space:pre-line;font-size:11px;line-height:1.7;color:var(--teal);margin:18px 0}#all-light-status.error{color:#ad4b32}.shelly-light-feedback{font-size:11px;line-height:1.6;color:var(--teal);margin:10px 0}.switch:disabled{opacity:.45;cursor:wait}
+
+/* Indoor sensor readings stay in room popups; floorplan geometry is unchanged. */
+.shelly-sensor-section{margin-top:26px}.sensor-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 12px}.sensor-metrics>div{background:#edf3e9;border-radius:13px;padding:14px 12px}.sensor-metrics span{display:block;font-size:11px;color:#708c7d;margin-bottom:9px}.sensor-metrics strong{display:block;font-size:25px;font-weight:550;color:var(--ink);white-space:nowrap}.sensor-caption{display:block;color:#708c7d;font-size:10px;line-height:1.7;margin:8px 0}.sensor-room-info>h3{font-size:14px}.sensor-room-info .secondary-action{margin-top:12px}
+
+/* Native, keyboard-accessible groups; each group opens independently. */
+.shelly-equipment-group{margin:16px 0;border:1px solid #ccddce;border-radius:14px;background:#f7faf3;overflow:hidden}.shelly-equipment-group>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:68px;padding:16px;cursor:pointer;list-style:none;color:var(--ink);font-size:15px;font-weight:600;touch-action:manipulation}.shelly-equipment-group>summary::-webkit-details-marker{display:none}.shelly-equipment-group>summary small{display:block;margin-top:5px;font-size:10px;font-weight:400;color:#708c7d}.shelly-equipment-group>summary::after{content:"";flex:none;width:8px;height:8px;margin:0 4px 5px 0;border-right:2px solid #497f74;border-bottom:2px solid #497f74;transform:rotate(45deg)}.shelly-equipment-group[open]>summary::after{transform:rotate(225deg);margin-top:7px}.shelly-equipment-group[open]>summary{border-bottom:1px solid #dce6d8}.shelly-equipment-group>summary:focus-visible{outline:3px solid var(--teal);outline-offset:-4px;border-radius:12px}.shelly-equipment-content{padding:16px}.shelly-equipment-content .shelly-mapping{background:#fffffa;margin:16px 0}
+
+/* Associated indoor sensors appear under the room name, within the same touch target. */
+.room-pin.has-sensor{flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:9px 11px}.room-pin-sensor-values{display:block;font-size:10px;font-weight:500;line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:.1px}.room-pin-sensor-status{display:block;font-size:8px;font-weight:400;line-height:1.2;opacity:.8;white-space:nowrap}.room-pin.is-off .room-pin-sensor-values{color:#c5e4df}@media(max-width:550px){.room-pin.has-sensor{padding:7px 8px;gap:3px}.room-pin-sensor-values{font-size:9px}.room-pin-sensor-status{font-size:7px}}
+
+/* Per-equipment telemetry can be expanded without reopening it on every refresh. */
+.shelly-result.shelly-equipment-group{margin:12px 0;padding:0;border:1px solid #ccddce}.shelly-result-content{padding:4px 16px 16px}.shelly-result-content p{overflow-wrap:anywhere}.shelly-result>summary small{margin-top:5px}

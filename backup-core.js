@@ -19,6 +19,8 @@
   if(typeof data['casa-nl-show-banners']!=='boolean')fail();
   if(Object.hasOwn(data,'casa-nl-show-blind-banners')&&typeof data['casa-nl-show-blind-banners']!=='boolean')fail();
   if(Object.hasOwn(data,'casa-nl-shelly-cloud-v1')){try{const core=typeof module==='object'&&module.exports?require('./shelly-core.js'):globalThis.ShellyCore;data['casa-nl-shelly-cloud-v1']=core.config(data['casa-nl-shelly-cloud-v1'])}catch{fail()}}
+  if(Object.hasOwn(data,'casa-nl-meteo-v1')){try{const core=typeof module==='object'&&module.exports?require('./meteo-core.js'):globalThis.CasaMeteoCore;data['casa-nl-meteo-v1']=core.preferences(data['casa-nl-meteo-v1'])}catch{fail()}}
+  if(Object.hasOwn(data,'casa-nl-screensaver-v1')){try{const core=typeof module==='object'&&module.exports?require('./meteo-core.js'):globalThis.CasaMeteoCore;data['casa-nl-screensaver-v1']=core.screensaver(data['casa-nl-screensaver-v1'])}catch{fail()}}
   const env=data['casa-nl-environment-v1'];if(!object(env)||!['auto','day','night'].includes(env.mode))fail();
   const c=env.city;if(c!==null&&(!object(c)||typeof c.name!=='string'||!c.name.trim()||c.name.length>150||!Number.isFinite(c.latitude)||Math.abs(c.latitude)>90||!Number.isFinite(c.longitude)||Math.abs(c.longitude)>180))fail();
   return data;

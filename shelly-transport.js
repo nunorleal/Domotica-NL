@@ -1,7 +1,7 @@
 /* Direct Cloud v2 transport: static hosting, serialized requests, no command retries. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./shelly-core.js'));else root.ShellyTransport=factory(root.ShellyCore)})(typeof window==='undefined'?globalThis:window,function(CORE){
  'use strict';
- const errors={DEVICE_OFFLINE:'O Shelly está offline.',DEVICE_NOT_FOUND:'ID não encontrado nesta conta.',DEVICE_INVALID_CHANNEL:'Canal inválido para este Shelly.',DEVICE_INVALID_MODE:'O Shelly não está em modo estore.',DEVICE_FAILED_COMMAND:'O Shelly recusou o comando.',DEVICE_UNSUPPORTED_COMMAND:'Comando não suportado pelo Shelly.',BAD_REQUEST:'A Shelly Cloud recusou os parâmetros do pedido.',INSTANCE_NOT_FOUND:'O servidor Shelly não encontrou este dispositivo.'};
+ const errors={DEVICE_OFFLINE:'O Shelly está offline.',DEVICE_NOT_FOUND:'ID não encontrado nesta conta.',DEVICE_INVALID_CHANNEL:'Canal inválido para este Shelly.',DEVICE_INVALID_MODE:'A saída Shelly não corresponde ao tipo de equipamento configurado.',DEVICE_FAILED_COMMAND:'O Shelly recusou o comando.',DEVICE_UNSUPPORTED_COMMAND:'Comando não suportado pelo Shelly.',BAD_REQUEST:'A Shelly Cloud recusou os parâmetros do pedido.',INSTANCE_NOT_FOUND:'O servidor Shelly não encontrou este dispositivo.'};
  function build(credentials,path,payload){
   const host=CORE.server(credentials.server),key=credentials.authKey;
   if(typeof key!=='string'||!key.trim()||key.length>4096)throw Error('Indique a chave de autorização Shelly Cloud.');
@@ -9,6 +9,8 @@
   if(path==='status'){
    if(!Array.isArray(payload.ids)||!payload.ids.length||payload.ids.length>10)throw Error('Consulta de dispositivos inválida.');
    endpoint='get';body={ids:[...new Set(payload.ids.map(CORE.deviceId))],select:['status']};
+  }else if(path==='light'){
+   const c=CORE.lightCommand({deviceId:payload.id,channel:payload.channel,type:payload.type},payload.on);endpoint='set/'+c.type;body={id:c.id,channel:c.channel,on:c.on};
   }else if(path==='cover'){
    endpoint='set/cover';body=CORE.command({deviceId:payload.id,channel:payload.channel},payload.position);
   }else if(path==='covers'){
@@ -31,7 +33,7 @@
    return {devices:data};
   }
   if(data!==null&&(typeof data!=='object'||Array.isArray(data)))throw Error('Resposta de comando inesperada da Shelly Cloud.');
-  if(request.path==='cover')return {accepted:true};
+  if(request.path==='cover'||request.path==='light')return {accepted:true};
   const failed={};
   if(data?.failedCommands!==undefined){
    if(!data.failedCommands||typeof data.failedCommands!=='object'||Array.isArray(data.failedCommands))throw Error('Resposta de grupo inesperada da Shelly Cloud.');
