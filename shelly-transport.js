@@ -8,7 +8,7 @@
   let endpoint,body,keys=[];
   if(path==='status'){
    if(!Array.isArray(payload.ids)||!payload.ids.length||payload.ids.length>10)throw Error('Consulta de dispositivos inválida.');
-   endpoint='get';body={ids:[...new Set(payload.ids.map(CORE.deviceId))],select:['status']};
+   endpoint='get';body={ids:[...new Set(payload.ids.map(CORE.statusDeviceId))],select:['status']};
   }else if(path==='light'){
    const c=CORE.lightCommand({deviceId:payload.id,channel:payload.channel,type:payload.type},payload.on);endpoint='set/'+c.type;body={id:c.id,channel:c.channel,on:c.on};
   }else if(path==='cover'){
