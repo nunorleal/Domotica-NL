@@ -5,6 +5,8 @@ from functools import partial
 ROOT=Path(__file__).resolve().parents[1]
 SHIM=r'''<script>
 (()=>{
+localStorage.setItem('casa-nl-lights-restored-v1','true');
+localStorage.setItem('casa-nl-door-ids-restored-v1','true');
 const cloud={schemaVersion:1,server:'https://shelly-1-eu.shelly.cloud',authKey:'',rememberKey:false,bindings:{},lightBindings:{master:{deviceId:'deadbeef1111',channel:0,type:'switch'},bedroom2:{deviceId:'deadbeef2222',channel:1,type:'light'},living:{deviceId:'deadbeef3333',channel:0,type:'switch'}}};
 if(new URLSearchParams(location.search).has('wrongtype'))for(const b of Object.values(cloud.lightBindings))b.type='switch';
 const sensorTestParams=new URLSearchParams(location.search);if(sensorTestParams.has('sensors')||sensorTestParams.has('sensorsonly'))cloud.sensorBindings={living:{deviceId:'deadbeef4444',temperatureChannel:0,humidityChannel:0},master:{deviceId:'deadbeef5555',temperatureChannel:0,humidityChannel:0}};if(sensorTestParams.has('sensorsonly'))cloud.lightBindings={};
@@ -18,6 +20,8 @@ if(sensorTestParams.has('alarm')){cloud.alarm={arm:{deviceId:'deadbeefaa01',chan
 if(sensorTestParams.has('fan')){cloud.fan={deviceId:'deadbeefbb01',channel:0};localStorage.setItem('casa-nl-shelly-cloud-v1',JSON.stringify(cloud));}
 if(sensorTestParams.has('media')){cloud.mediaBindings=Object.fromEntries(['tv','soundbar','playstation','vodafone','unifi'].map((id,i)=>[id,{deviceId:'deadbeefff0'+i,channel:0}]));cloud.officeBindings={monitor:{deviceId:'deadbeefee01',channel:0}};localStorage.setItem('casa-nl-shelly-cloud-v1',JSON.stringify(cloud));}
 if(sensorTestParams.has('office')){cloud.officeBindings=Object.fromEntries(['monitor','apollo','terramaster','blackdrive'].map((id,i)=>[id,{deviceId:'deadbeefee0'+i,channel:0}]));localStorage.setItem('casa-nl-shelly-cloud-v1',JSON.stringify(cloud));}
+if(sensorTestParams.has('windows')){cloud.windowBindings=Object.fromEntries(['master','bedroom2','living','kitchen'].map((id,i)=>[id,{deviceId:'XB9000000000000'+i,source:'blu',component:0}]));localStorage.setItem('casa-nl-shelly-cloud-v1',JSON.stringify(cloud));}
+if(sensorTestParams.has('windowday')){localStorage.setItem('casa-nl-environment-v1',JSON.stringify({mode:'day',city:null}));localStorage.setItem('casa-nl-realistic-v2',JSON.stringify(['master','bedroom2','living','kitchen','bath1','bath2','hall','balcony'].map((id,i)=>({id,light:false,...(i<4?{blind:100}:{})}))));}
 const states={deadbeef1111:false,deadbeef2222:false,deadbeef3333:false},types={deadbeef1111:'switch',deadbeef2222:'light',deadbeef3333:'switch'},channels={deadbeef1111:0,deadbeef2222:1,deadbeef3333:0},commands=[];
 if(sensorTestParams.has('alarm')){const m=sensorTestParams.get('alarm');states.deadbeefaa01=['armed','sounding','partial','offline','armoffline'].includes(m);states.deadbeefaa02=['sounding','disarmed-trigger'].includes(m);types.deadbeefaa01=types.deadbeefaa02='switch';channels.deadbeefaa01=1;channels.deadbeefaa02=0;}
 states.deadbeefbb01=sensorTestParams.get('fan')==='on';types.deadbeefbb01='switch';channels.deadbeefbb01=0;
@@ -39,6 +43,7 @@ const native=window.fetch.bind(window),params=new URLSearchParams(location.searc
   if(id==='deadbeefbb01')return {id,online:params.get('fan')==='offline'?0:1,status:{relays:[{ison:params.get('fan')==='unknown'?null:states[id]}]}};
   if(id==='deadbeefaa01'||id==='deadbeefaa02'){const m=params.get('alarm'),arm=id==='deadbeefaa01',online=m!=='offline'&&!(arm&&m==='armoffline')&&!(!arm&&m==='partial');return {id,online:online?1:0,code:'MOCK-ALARM',status:{relays:arm?[{ison:false},{ison:m==='unknown'?null:states[id]}]:[{ison:states[id]}]}}}
   if(/^deadbeefee0[0-3]$/.test(id)&&params.has('office')){const i=Number(id.slice(-1)),unknown=params.get('office')==='unknown',offline=params.get('office')==='offline';return {id,online:offline?0:1,status:{'switch:0':{output:unknown?null:states[id],apower:unknown?null:states[id]?25+i*12:0,aenergy:{total:15000+i*1000}}}};}
+  if(/^XB9000000000000[0-3]$/.test(id)){const mode=params.get('windows'),index=Number(id.slice(-1));return {id,online:mode==='offline'?0:1,status:{'window:0':{open:mode==='unknown'?null:mode==='open'||mode==='mixed'&&index%2===0}}};}
   if(id==='XB12345678901234'){const mode=params.get('cellar');return {id,online:mode==='offline'?0:1,status:{'window:0':params.has('cellarbluopen')?{open:mode==='unknown'?null:mode==='open'}:{value:mode==='unknown'?null:mode==='open'}}}}
   if(id==='XB66172384118439'){const mode=params.get('door');return {id,online:mode==='offline'?0:1,status:{'window:0':{id:0,open:mode==='unknown'?null:mode==='open'}}}}
   if(id==='deadbeef8888'){const mode=params.get('door'),value=mode==='unknown'?'invalid':mode==='open';return {id,online:mode==='offline'?0:1,status:params.has('bthome')?{'bthomesensor:200':{value,last_updated_ts:Date.now()/1000}}:{'window:0':{value}}}}

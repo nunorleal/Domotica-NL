@@ -97,3 +97,10 @@ test('cellar BLU diagnosis reads only its own saved ID; missing cellar never use
  const cellar=await context.inspectDoorSensor('cellar');assert.equal(cellar.fields[0].value,true);const entrance=await context.inspectDoorSensor();assert.equal(entrance.fields[0].value,false);assert.deepEqual(JSON.parse(JSON.stringify(calls)),[{path:'status',ids:['XB12345678901234']},{path:'status',ids:['XB66172384118439']}]);
  delete context.config.cellarDoor;await assert.rejects(context.inspectDoorSensor('cellar'));await assert.rejects(context.inspectDoorSensor('invalid'));assert.equal(calls.length,2);assert.equal(context.busy,false);
 });
+
+test('confirmed entrance/cellar IDs stay distinct and preserve their full XB values',()=>{
+ const D=require('../door-core.js'),C=require('../shelly-core.js'),expected={door:{deviceId:'XB66172384118439',source:'blu',component:0},cellarDoor:{deviceId:'XB106582486435511',source:'blu',component:0}};
+ assert.deepEqual(D.suppliedBindings(),expected);assert.deepEqual(D.suppliedBindings({cellarDoor:expected.door}),expected);
+ const cfg=C.config({schemaVersion:1,server:'',authKey:'',rememberKey:false,bindings:{},...D.suppliedBindings()});assert.deepEqual(cfg.door,expected.door);assert.deepEqual(cfg.cellarDoor,expected.cellarDoor);assert.deepEqual(C.deviceIds(cfg),['XB66172384118439','XB106582486435511']);
+ assert.equal(D.suppliedBindings({cellarDoor:{...expected.cellarDoor,component:1}}).cellarDoor.component,1);
+});
