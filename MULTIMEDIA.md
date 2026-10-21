@@ -49,3 +49,9 @@ Pedido do utilizador: TV tem baixo consumo em standby. activityThreshold('tv')=4
 ## Iluminação da sala — 1.64
 
 O candeeiro e a consola do popup acompanham a luz da sala. Render sem emissão quando apagada ou por confirmar; TV/PS5 independentes. Ver MULTIMEDIA-RENDER.md para recurso, prompt e validação.
+
+## Botão único de energia — 1.70
+
+As duas ações de alimentação foram substituídas pelo botão circular junto do refresh. Verde é relé ligado confirmado, cinzento desligado; desconhecido aparece neutro âmbar e bloqueado. O clique calcula o booleano inverso do snapshot e usa o comando individual existente; nenhuma troca otimista, endpoint toggle ou atuação automática. Durante pedido/consulta fica desativado; só a leitura confirmada muda a cor. Mantém-se o aviso de encerramento do servidor/disco. UI verificada com dispositivos fictícios e 143 testes passaram.
+
+Prova do botão cinzento: review/sala-botao-energia-1.70.png. Teste isolado: clique envia on explícito só à TV fictícia, mantendo a cor anterior até confirmação.

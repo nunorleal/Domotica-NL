@@ -2,6 +2,8 @@
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.ShellyCore=factory()})(typeof window==='undefined'?globalThis:window,function(){
  'use strict';
  const ROOM_IDS=['master','bedroom2','living','kitchen'],LIGHT_ROOM_IDS=['master','bedroom2','living'],SENSOR_ROOM_IDS=['living','master','cellar'];
+ const SUPPLIED_LIGHT_IDS={master:'98cdac1df7e9',bedroom2:'98cdac1f18fa',living:'98cdac2d2eb6'};
+ function suppliedLightBindings(previous={}){return Object.fromEntries(Object.entries(SUPPLIED_LIGHT_IDS).map(([id,deviceId])=>{const old=previous[id],same=old&&String(old.deviceId).toLowerCase()===deviceId;return [id,{deviceId,channel:same?old.channel:0,type:same?old.type:'switch'}]}))}
  function server(value){let u;try{u=new URL(value.includes('://')?value:'https://'+value)}catch{throw Error('Indique o servidor Shelly Cloud da sua conta.')}if(u.protocol!=='https:'||!/^shelly-[a-z0-9-]+\.shelly\.cloud$/i.test(u.hostname)||u.port||u.username||u.password||u.search||u.hash||u.pathname!=='/')throw Error('Use apenas o endereço HTTPS do servidor Shelly Cloud, sem caminhos ou parâmetros.');return u.origin}
  function deviceId(value){const id=String(value).trim().toLowerCase().replace(/:/g,'');if(!/^[a-f0-9]{6,32}$/.test(id))throw Error('O ID deve ser o Device ID hexadecimal do Shelly (não o nome nem o endereço IP).');return id}
  // BLU Cloud IDs are distinct from hexadecimal actuator IDs. Preserve XB on reads.
@@ -33,12 +35,13 @@
   const door=value.door==null?undefined:(typeof module==='object'&&module.exports?require('./door-core.js'):globalThis.CasaDoorCore).config(value.door,statusDeviceId);
   const cellarDoor=value.cellarDoor==null?undefined:(typeof module==='object'&&module.exports?require('./door-core.js'):globalThis.CasaDoorCore).config(value.cellarDoor,statusDeviceId);
   if(door&&cellarDoor&&door.deviceId===cellarDoor.deviceId&&door.source===cellarDoor.source&&door.component===cellarDoor.component)throw Error('O mesmo contacto não pode estar associado às duas portas.');
+  const windowBindings=value.windowBindings===undefined?undefined:(typeof module==='object'&&module.exports?require('./windows-core.js'):globalThis.CasaWindowsCore).config(value.windowBindings,statusDeviceId,[door,cellarDoor]);
   const ev=value.ev===undefined?undefined:(typeof module==='object'&&module.exports?require('./ev-core.js'):globalThis.CasaEVCore).config(value.ev,{deviceId,used});
   const alarm=value.alarm===undefined?undefined:(typeof module==='object'&&module.exports?require('./alarm-core.js'):globalThis.CasaAlarmCore).config(value.alarm,{deviceId,used});
   let fan=value.fan;if(fan!==undefined&&fan!==null){const a=(typeof module==='object'&&module.exports?require('./alarm-core.js'):globalThis.CasaAlarmCore).config({arm:{...fan,activeWhenOn:true}},{deviceId,used}).arm;fan={deviceId:a.deviceId,channel:a.channel}}
   const mediaBindings=value.mediaBindings===undefined?undefined:(typeof module==='object'&&module.exports?require('./media-core.js'):globalThis.CasaMediaCore).config(value.mediaBindings,{deviceId,used});
   const officeBindings=value.officeBindings===undefined?undefined:(typeof module==='object'&&module.exports?require('./media-core.js'):globalThis.CasaMediaCore).config(value.officeBindings,{deviceId,used,ids:(typeof module==='object'&&module.exports?require('./media-core.js'):globalThis.CasaMediaCore).OFFICE_IDS});
-  return {schemaVersion:1,server:host,authKey:value.rememberKey?value.authKey:'',rememberKey:value.rememberKey,bindings,...(value.lightBindings!==undefined?{lightBindings}:{}),...(value.sensorBindings!==undefined?{sensorBindings}:{}),...(ev!==undefined?{ev}:{}),...(door!==undefined?{door}:{}),...(homeEnergy!==undefined?{homeEnergy}:{}),...(cellarDoor!==undefined?{cellarDoor}:{}),...(alarm!==undefined?{alarm}:{}),...(fan!==undefined?{fan}:{}),...(mediaBindings!==undefined?{mediaBindings}:{}),...(officeBindings!==undefined?{officeBindings}:{})}
+  return {schemaVersion:1,server:host,authKey:value.rememberKey?value.authKey:'',rememberKey:value.rememberKey,bindings,...(value.lightBindings!==undefined?{lightBindings}:{}),...(value.sensorBindings!==undefined?{sensorBindings}:{}),...(ev!==undefined?{ev}:{}),...(door!==undefined?{door}:{}),...(homeEnergy!==undefined?{homeEnergy}:{}),...(cellarDoor!==undefined?{cellarDoor}:{}),...(alarm!==undefined?{alarm}:{}),...(fan!==undefined?{fan}:{}),...(mediaBindings!==undefined?{mediaBindings}:{}),...(officeBindings!==undefined?{officeBindings}:{}),...(windowBindings!==undefined?{windowBindings}:{})}
  }
 
  const number=v=>typeof v==='number'&&Number.isFinite(v)?v:null;
@@ -60,7 +63,7 @@
   const bp=number(s['devicepower:0']?.battery?.percent??s.bat?.value),battery=bp!==null&&bp>=0&&bp<=100?bp:null;
   return {online:device.online===1||device.online===true,hasSensor:!!t||!!h,temperature,humidity,battery,model:String(device.code||device.type||'').slice(0,100)};
  }
- function deviceIds(config){const energy=(typeof module==='object'&&module.exports?require('./energy-core.js'):globalThis.CasaEnergyCore).binding(config);return [...new Set([config.mediaBindings,config.officeBindings,config.fan?{fan:config.fan}:{},energy?{home:energy}:{},config.bindings,config.lightBindings,config.sensorBindings,config.alarm,config.door?{entrance:config.door}:{},config.cellarDoor?{cellar:config.cellarDoor}:{},config.ev?Object.fromEntries(['meter','totalMeter','relay'].filter(k=>config.ev[k]).map(k=>[k,config.ev[k]])):{}].flatMap(b=>Object.values(b||{}).map(v=>v.deviceId)))]}
+ function deviceIds(config){const energy=(typeof module==='object'&&module.exports?require('./energy-core.js'):globalThis.CasaEnergyCore).binding(config);return [...new Set([config.mediaBindings,config.officeBindings,config.windowBindings,config.fan?{fan:config.fan}:{},energy?{home:energy}:{},config.bindings,config.lightBindings,config.sensorBindings,config.alarm,config.door?{entrance:config.door}:{},config.cellarDoor?{cellar:config.cellarDoor}:{},config.ev?Object.fromEntries(['meter','totalMeter','relay'].filter(k=>config.ev[k]).map(k=>[k,config.ev[k]])):{}].flatMap(b=>Object.values(b||{}).map(v=>v.deviceId)))]}
  function deviceBatches(config){const ids=deviceIds(config),batches=[];for(let i=0;i<ids.length;i+=10)batches.push(ids.slice(i,i+10));return batches}
  function lightCommand(binding,on){
   if(!binding||!['switch','light'].includes(binding.type)||!Number.isInteger(binding.channel)||binding.channel<0||binding.channel>15||typeof on!=='boolean')throw Error('Comando de candeeiro inválido.');
@@ -106,5 +109,5 @@
   for(const [room,b]of Object.entries(bindings)){if(!ROOM_IDS.includes(room))throw Error('Divisão inválida.');const c=command(b,position),id=c.id+'_'+c.channel;if(used.has(id))throw Error('Estores repetidos.');used.add(id);devices.push({id:c.id,channel:c.channel})}
   if(!devices.length||devices.length>4)throw Error('Selecione entre 1 e 4 estores.');return {devices,position};
  }
- return {ROOM_IDS,LIGHT_ROOM_IDS,SENSOR_ROOM_IDS,sensorStatus,deviceIds,deviceBatches,server,deviceId,statusDeviceId,config,status,lightCommand,lightStatus,resolvedLightCommand,canLightControl,command,canControl,groupCommand};
+ return {SUPPLIED_LIGHT_IDS,suppliedLightBindings,ROOM_IDS,LIGHT_ROOM_IDS,SENSOR_ROOM_IDS,sensorStatus,deviceIds,deviceBatches,server,deviceId,statusDeviceId,config,status,lightCommand,lightStatus,resolvedLightCommand,canLightControl,command,canControl,groupCommand};
 });

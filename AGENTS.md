@@ -177,3 +177,33 @@ Nova autorização para preencher também officeBindings vazio/parcial: MC.assoc
 # Secretária acompanha a iluminação — 1.67
 
 CasaOffice.syncPlan lê darkness/electricOpacity do quarto bedroom2, as mesmas funções/ciclo drawRoomLighting da planta. Escurecimento proporcional da secretária SVG com estores/luz diurna/noite; luz elétrica devolve brilho e ligeiro tom quente. Sem hover que volte a iluminar o móvel e com movimento reduzido respeitado. Sem alterações a estados/comandos, popup, imagens ou paredes.
+
+# Janelas BLU — 1.68
+
+windowBindings opcional para master/bedroom2/living/kitchen, IDs XB fornecidos pelo utilizador em windows-core.js, mesma conta/fila/consulta15s/lotes<=10. Config/backup preservam IDs completos, source blu/bthome e componente; recusar contacto repetido entre portas e janelas. Migração única casa-nl-window-ids-associated-v1 preenche só papéis em falta, preserva edições e remoções futuras. Não atuar nem configurar gateways. Janela e estore independentes: abertura nunca altera percentagem ou luz natural.
+
+windowSnapshot usa DoorCore.status/state com window:N.open explícito, online/fresco45s; unknown/offline/erro/stale = recorte fechado com texto por confirmar, não falso fechado. UI Janelas colapsável nas definições e estado/consulta no popup da divisão. CasaWindows.patch usa apenas retângulos locais dos renders gerados dia/noite/elétrico; manter máscaras brancas por cima e todos os outros pixels originais. Ocultar recorte apenas com true confirmado. Ver JANELAS.md para recursos/prompts e tests/windows.test.cjs/fixture windows para testes sem equipamentos reais.
+
+# Hover da consola e secretária — 1.69
+
+Manter o sombreado verde da TV; aplicar o mesmo à secretária. Móvel da secretária em .office-desk-graphic independente do botão, com iluminação só no gráfico: hover nunca oculta/filtra o móvel. Ícones separados e preferência booleana casa-nl-show-console-icons, check Mostrar ícones da TV e secretária junto dos outros nas definições, validada/incluída no backup. Ocultar só os ícones; manter móvel, zonas clicáveis, hover e foco de teclado. Sem comandos ou alterações aos renders.
+
+# Botão único de alimentação — 1.70
+
+Nos popups media/office, substituir ações on/off por botão circular de energia junto do refresh. Verde = relé on confirmado, cinzento = off; unknown âmbar desativado, nunca inferir de watts. aria-pressed mixed para unknown e aria-busy em confirmação. Clique lê snapshot recente/canControl e envia booleano explícito inverso pelo comando individual existente, nunca endpoint toggle nem mudança otimista. Durante busy/pending bloquear. Preservar nota de encerramento prévio de servidor/disco.
+
+# Backup completo e proteção de associações — 1.71
+
+Exportação recusa formulário Shelly sujo, evitando omitir IDs ainda por guardar. Resumo por categoria conta todos os papéis (incluindo luzes dos quartos), sem imprimir chave. CasaBackup.prepareImport em cópia profunda preserva por omissão associações atuais ausentes de JSON antigo/parcial, apenas na mesma conta/servidor; check na pré-visualização permite reposição exata. Revalidar duplicados antes de escrever, nunca misturar servidores diferentes nem promover rememberKey de ficheiro. Recalcular plano antes da confirmação. Guardar Shelly recusa se outra janela alterou o valor persistido desde o carregamento/último save. Nenhuma operação de backup aciona dispositivos. Teste de roundtrip integral32 associações em tests/backup-complete.test.cjs, sem segredos reais. IDs apagados antes desta versão só recuperáveis de uma cópia anterior ou reintrodução pelo utilizador.
+
+# Aviso de IDs em falta — 1.72
+
+association-warnings.js lista associações sem Device ID nas definições gerais e no menu Shelly, com ligações diretas aos campos e indicação vermelha ID em falta. Atualiza ao editar/preencher/guardar; não usar validação required nem bloquear remoção ou gravação de outros equipamentos. Contador separado EV é opcional; contador geral em origem car usa ID partilhado, só avisar campo próprio quando custom. Não confundir ID em falta com dispositivo offline, não alterar configurações nem enviar pedidos/comandos ao mostrar aviso. Não reconstruir o formulário ao navegar do aviso, para preservar edições.
+
+# IDs reais dos três candeeiros — 1.73
+
+Utilizador voltou a fornecer os IDs: master98cdac1df7e9, bedroom298cdac1f18fa, living98cdac2d2eb6. Migração única casa-nl-lights-restored-v1 associa explicitamente os três, com canal0/preferência switch por omissão; se o mesmo ID já estava guardado, preservar canal/tipo. Preservar toda a restante configuração/conta; validar antes de persistir, marcar só após sucesso. Depois permitir edição/remoção sem reaplicar. Marcador booleano validado/exportado no backup. Guardar/carregar só consulta; não ligar/desligar para testar. Fixtures marcam a migração como concluída para continuar a usar só IDs fictícios.
+
+# IDs confirmados das portas — 1.74
+
+Utilizador corrigiu a porta da cave para XB106582486435511; entrada mantém XB66172384118439. DoorCore.suppliedBindings aplica os dois IDs distintos como BLU, componente0 por omissão, preservando componente do mesmo sensor já guardado. Migração única casa-nl-door-ids-restored-v1 validada/exportada no backup; preservar restante conta/config, permitir edição/remoção posterior sem reaplicar. Apenas consultar contactos; não alterar renders, gateways, estores ou atuadores. Fixtures excluem a migração dos IDs reais.

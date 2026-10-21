@@ -56,3 +56,7 @@ Novo botão Verificar sensor BLU consulta o ID BLU associado pela fila/conta exi
 A cave utiliza a mesma leitura window:N.open, polling e normalização da porta principal. O botão Verificar sensor BLU passa a existir também no grupo Porta da cave, com IDs próprios cellar-door-sensor-check/result. inspectDoorSensor('cellar') consulta exclusivamente config.cellarDoor; o argumento omitido mantém a entrada, outros argumentos são rejeitados. Sem associação na cave, informar em vez de usar o sensor da entrada. Não alterar IDs/origens/componentes guardados nem copiar o gateway da entrada.
 
 128 testes passaram; teste da função real de diagnóstico com dois IDs distintos, associação ausente e alvo inválido. Fixture confirmou cave aberta/entrada fechada e vice-versa, render SVG correspondente e zero comandos. Prova fictícia em review/porta-cave-blu-1.58.png.
+
+## IDs confirmados — 1.74
+
+Porta principal: XB66172384118439. Porta da cave: XB106582486435511 (corrigido pelo utilizador após ter repetido o ID da entrada). Origem BLU, componente0 por omissão; manter componente se já configurado para o mesmo ID. Migração única na configuração existente, incluída no backup, só de leitura. Não foram testados sensores físicos.

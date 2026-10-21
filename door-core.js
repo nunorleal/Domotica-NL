@@ -1,6 +1,9 @@
 /* Read-only entrance sensor. Unknown must never be reported as closed. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.CasaDoorCore=factory()})(typeof window==='undefined'?globalThis:window,function(){
  'use strict';
+ const SUPPLIED_DOOR_IDS={door:'XB66172384118439',cellarDoor:'XB106582486435511'};
+ function suppliedBindings(previous={}){return Object.fromEntries(Object.entries(SUPPLIED_DOOR_IDS).map(([role,deviceId])=>{const old=previous[role],same=old?.source==='blu'&&String(old.deviceId).toUpperCase()===deviceId;return [role,{deviceId,source:'blu',component:same?old.component:0}]}))}
+
  function config(v,readId){if(!v||typeof v!=='object'||Array.isArray(v)||!['blu','bthome'].includes(v.source))throw Error('Associação da porta inválida.');const component=v.component??0;if(!Number.isInteger(component)||component<0||component>999)throw Error('Componente da porta inválido.');const raw=String(v.deviceId).trim();if(v.source==='bthome'&&/^XB/i.test(raw))throw Error('Em BTHome, indique o ID hexadecimal do gateway; o ID XB pertence ao sensor BLU.');return {deviceId:readId(raw),source:v.source,component}}
  function binary(v){return v===true||v===1?true:v===false||v===0?false:null}
  function status(device,b){
@@ -39,5 +42,5 @@
   function walk(v,path,depth){if(depth>4||fields.length>=60)return;if(v===null||typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v)||typeof v==='string'&&/^(open|closed|true|false|0|1)$/i.test(v)){fields.push({path,value:v});return}if(v&&typeof v==='object'&&!Array.isArray(v))for(const [k,x]of Object.entries(v))if(allowed.test(k))walk(x,path?path+'.'+k:k,depth+1)}
   walk(s,'',0);return {found:true,online:device.online===true||device.online===1,keys,fields};
  }
- return {config,status,state,inspectGateway,inspectSensor};
+ return {SUPPLIED_DOOR_IDS,suppliedBindings,config,status,state,inspectGateway,inspectSensor};
 });
