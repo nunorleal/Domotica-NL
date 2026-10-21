@@ -17,7 +17,11 @@
   const layout=data['casa-nl-room-layout-v1'];if(!object(layout)||Object.keys(layout).length!==IDS.length)fail();
   for(const [id,r]of Object.entries(layout)){if(!IDS.includes(id)||!object(r)||!(r.name===null||(typeof r.name==='string'&&r.name.trim()&&r.name.length<=40))||!Number.isFinite(r.lx)||!Number.isFinite(r.ly)||r.lx<0||r.lx>100||r.ly<0||r.ly>100)fail()}
   if(typeof data['casa-nl-show-banners']!=='boolean')fail();
+  if(Object.hasOwn(data,'casa-nl-gui-ids-associated-v1')&&typeof data['casa-nl-gui-ids-associated-v1']!=='boolean')fail();
+  if(Object.hasOwn(data,'casa-nl-cellar-temperature-added-v1')&&typeof data['casa-nl-cellar-temperature-added-v1']!=='boolean')fail();
+  if(Object.hasOwn(data,'casa-nl-show-energy-banner')&&typeof data['casa-nl-show-energy-banner']!=='boolean')fail();
   if(Object.hasOwn(data,'casa-nl-show-blind-banners')&&typeof data['casa-nl-show-blind-banners']!=='boolean')fail();
+  if(Object.hasOwn(data,'casa-nl-basement-layout-v1')){try{const core=typeof module==='object'&&module.exports?require('./basement-layout-core.js'):globalThis.CasaBasementLayoutCore;data['casa-nl-basement-layout-v1']=core.layout(data['casa-nl-basement-layout-v1'])}catch{fail()}}
   if(Object.hasOwn(data,'casa-nl-shelly-cloud-v1')){try{const core=typeof module==='object'&&module.exports?require('./shelly-core.js'):globalThis.ShellyCore;data['casa-nl-shelly-cloud-v1']=core.config(data['casa-nl-shelly-cloud-v1'])}catch{fail()}}
   if(Object.hasOwn(data,'casa-nl-meteo-v1')){try{const core=typeof module==='object'&&module.exports?require('./meteo-core.js'):globalThis.CasaMeteoCore;data['casa-nl-meteo-v1']=core.preferences(data['casa-nl-meteo-v1'])}catch{fail()}}
   if(Object.hasOwn(data,'casa-nl-screensaver-v1')){try{const core=typeof module==='object'&&module.exports?require('./meteo-core.js'):globalThis.CasaMeteoCore;data['casa-nl-screensaver-v1']=core.screensaver(data['casa-nl-screensaver-v1'])}catch{fail()}}

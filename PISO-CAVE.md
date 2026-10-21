@@ -32,3 +32,15 @@ A cave surge de baixo na transição, e a casa de cima. Os botões indicam Desce
 ## Indicadores no lado esquerdo — 1.38
 
 Duas bolinhas verticais à esquerda. Superior: casa/piso 0. Inferior: cave/piso −1. A do piso atual fica preenchida, maior e marcada com aria-current. Os alvos de toque têm 44 × 44 px e permitem escolher diretamente o piso. A seleção acompanha as restantes formas de navegação.
+
+## Ajustes visuais — 1.39
+
+A cave é alargada visualmente para a esquerda na proporção de 2 m, preservando a parede direita e o carro. Todas as cotas foram retiradas, incluindo as do banner e do popup. As bolinhas passam a 5 px (inativa) e 8 px (ativa), com centros separados por 28 px e alvos independentes de 44 px. A planta mantém uma margem lateral. O comando Subir/Descer passa a texto discreto, sem fundo, afastado do menu inferior. Os indicadores e o texto adaptam o contraste ao ambiente diurno/noturno.
+
+
+### 1.41 — Pavimento interior
+O interior da cave usa cimento cinzento contínuo, com textura SVG sem juntas (`assets/cimento-cave.svg`). A alteração fica limitada a `.cellar-room`; o exterior mantém os paralelos e as paredes brancas permanecem intactas.
+
+
+### 1.42 — Cimento e banner elétrico
+Escurecido o cimento interior. O banner EV começa a 96% da zona de estacionamento, abaixo do percurso completo da mangueira (até aproximadamente 92%), para não ocultar o cabo ligado ou recolhido.

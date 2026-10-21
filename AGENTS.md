@@ -73,3 +73,107 @@ Desde 1.37, a cave fica por baixo da casa: scroll para baixo / swipe para cima n
 # Indicadores de piso — 1.38
 
 Duas bolinhas verticais no lado esquerdo, a meio da altura: botão superior para piso 0 e inferior para −1. Marcar apenas o piso visível com aria-current=page, círculo preenchido e maior. Cada alvo tem 44 × 44 px, nome acessível e permite mudar de piso. A indicação deve acompanhar scroll, swipe, botão do rodapé e Casa. Incluir a navegação no contentor inerte quando a MeteoNL abre.
+
+# Ajustes visuais da cave e navegação — 1.39
+
+Retirar medidas da planta, banner e popup da cave. A cave passa à proporção visual equivalente a 2 m de largura, expandindo para a esquerda através de .cellar-outline e preservando o alinhamento da parede direita, porta e carro. Não reintroduzir cotas visíveis. Bolinhas de 5/8 px, próximas (28 px entre centros), mantendo alvos de toque separados de 44 px. Reservar margem lateral para não encostar à planta. Garantir contraste em dia e noite. A indicação inferior usa apenas texto/seta subtil, sem cápsula nem sombra, com espaço acima do menu principal.
+
+# Carregamento do carro — 1.40
+
+Associação opcional `ev` na mesma configuração Shelly Cloud: meter, totalMeter opcional, relay e thresholdWatts (1..1000, omissão 50 W). Shelly EM pode usar o mesmo ID para a pinça e o relé, com canais independentes. Validação e backup via ShellyCore.config; preservar configurações antigas sem ev. Duplicar saída de atuação de luz/estore é proibido; partilhar ID/canal apenas para leitura é permitido. Consultas de até 12 dispositivos distintos em lotes de no máximo 10, na fila comum.
+
+EVCore normaliza W/kWh: emeters Gen1 total Wh, meters Gen1 total Watt-minute, Gen2 switch/pm1 aenergy.total Wh, em1data.total_act_energy Wh e emdata.total_act Wh. Não inventar zeros ausentes, não converter consumo negativo para positivo, não somar famílias ambíguas. O tipo auto exige só uma família no canal exato.
+
+A alimentação visual segue exclusivamente o booleano do relé reportado; o cabo conectado e a animação seguem apenas potência válida, online e recente acima do limiar. Sem dados recentes (45 s), erro ou offline: cabo recolhido, consumo por confirmar, atuação bloqueada; total anterior identificado como última leitura. Não inferir ficha física, bateria ou carga completa. Atualização a cada 15 s visível; não controlar automaticamente pelo consumo.
+
+Ligar/desligar o ponto é só por botão explícito no popup, com ID/canal do relay e set/switch, estado recente e configuração guardada. Usar a mesma fila, geração, proteção de credenciais e confirmação por consulta. Não retry, não estado otimista. O carregador nunca pertence a all-lights, all-blinds, cenários nem reset. Guardar/importar/carregar/abrir popup só consulta.
+
+UI em ev.js/ev.css, associada à parking-space depois de floors.js e antes de meteo.js. Os pixeis do carro e renders da casa não são alterados. Testes apenas com fixture fictícia; ver CARREGAMENTO-EV.md e tests/ev.test.cjs.
+
+
+# Navegação simplificada — 1.44
+Por pedido do utilizador, retirar a legenda «Cave · Entrada pela porta inferior» e os textos/botões «Subir/Descer» do rodapé. A indicação dos pisos usa apenas as duas bolinhas discretas à esquerda, centradas verticalmente: cima = casa, baixo = cave, piso atual mais carregado. Preservar clique nas bolinhas, scroll, swipe e botão Casa.
+
+# Porta de entrada — 1.46
+
+A entrada na esquerda da sala usa três pequenos recortes gerados de porta fechada, um por ambiente, aplicados apenas à sala por CasaDoor.patch dentro de drawRoomLighting. Preservar todo o resto da planta e a máscara branca. Só ocultar esses recortes para mostrar a porta aberta com leitura true válida; unknown/offline/error/stale mostram visual fechado e legenda por confirmar. Config opcional door na mesma conta Shelly, validação e backup partilhados; apenas leituras na fila normal. Modo BLU window e alternativa BTHomeSensor de gateway configurado para contacto obj_id45; nunca inferir por luminosidade, ângulo, bateria ou saída de relé e nunca configurar/acionar o sensor. Ver PORTA-ENTRADA.md sobre limites dos payloads Cloud e testes fictícios.
+
+Desde 1.47, IDs BLU podem ter formato XB seguido de dígitos decimais. Preservar o ID completo nas leituras/config/backup e usar ShellyCore.statusDeviceId só no transporte de consultas. Não substituir pelo MAC nem remover XB. Todos os atuadores e o gateway BTHome continuam a exigir ShellyCore.deviceId hexadecimal. Comparar resposta e associação BLU sem distinguir maiúsculas/minúsculas, inclusive na deteção de alterações do formulário.
+
+
+# Geometria correta da entrada — 1.48
+A porta principal fecha na HORIZONTAL, no vão inferior do recanto à esquerda da sala, entre x129 e x194 junto a y1058. Não fechar ao longo da parede esquerda vertical. Usar variantes porta-fechada-*-v2.png com recorte SVG x119,y975,w76,h89; preservar paredes brancas e todos os restantes pixels dos renders originais. A versão v1 tinha orientação incorreta.
+
+# Contador geral — 1.49
+
+energy-core/energy.js/energy.css: monitor apenas de leitura. Reutiliza ID do EM do carro por omissão, canal 0, contrato 6,9 kVA; não modificar a associação do carro. homeEnergy opcional validado em ShellyCore.config e no backup; ID manual possível. deviceIds deduplica também este ID; todos os lotes continuam até dez, sem limite total artificial de 12. Ler emeters[channel] com validade/frescura; calcular kVA com hypot(power,reactive), nunca equiparar kW/kVA nem assumir reativa zero quando ausente. Cor neutra em offline/erro/stale/desconhecido; total anterior explicitamente antigo. Banner esquerdo na sala com popup, preferência booleana casa-nl-show-energy-banner, check igual/alinhado aos outros e acesso em Controlos gerais. Ocultar/guardar/importar/carregar/consultar nunca aciona equipamentos. Usar fila, conta, geração e temporizador partilhados existentes. Ver CONTADOR-GERAL.md e testes fictícios.
+
+# Porta da cave — 1.51
+
+cellarDoor opcional na configuração Shelly, independente do campo legado door da entrada. Mesmo schema BLU/BTHome, IDs XB preservados, config/backup/consultas partilhados. Rejeitar contacto duplicado para as duas portas, permitir gateway com componentes distintos. doorSnapshot('cellar') e doorEnsureFresh('cellar') apenas leem. Cave mostra estado no banner/popup e atalho de associação. O desenho da cave é SVG nativo em floors.js: grupos cellar-door-closed (horizontal no vão inferior, por omissão) e cellar-door-open (folha/arco originais). Só mostrar aberto com leitura true válida, através de body.cellar-door-is-open; erros/unknown/offline/stale mantêm desenho fechado e legenda por confirmar. Não alterar a porta principal, chão, carro, paredes nem geometria. Testes sempre fictícios; ver PORTA-ENTRADA.md.
+
+# Alarme e banners da cave — 1.52
+
+alarm opcional na configuração Cloud, com papéis arm (atuador) e trigger (só leitura). Utilizador confirmou ON=armado, OFF=desarmado. Outro Shelly indica disparo; nunca o comandar. Config/polaridade/IDs/canais em alarm-form.js; validação, backup e transporte partilhados. Estado estritamente de relays/switch, online/fresco; disparo true tem prioridade mesmo com arm false/desconhecido. Halo verde armado, cinzento desarmado, vermelho intermitente no disparo, âmbar desconhecido/parcial. Sem respostas não inventar silêncio nem desarmado. Atuação explícita de arm, sem retry/estado otimista, confirmar por consulta e suspender protetor enquanto pendente; nunca grupos/reset/cenários.
+
+Cave, alarme e EV são arrastáveis por rato/toque através de basement-layout.js, depois de floors/alarm/ev e antes de meteo. Preservar clique normal e suprimir clique após drag; excluir .basement-movable de swipes de piso. Posições percentuais em casa-nl-basement-layout-v1, validadas/restauradas pelo backup-core e ajustadas dentro da cave/estacionamento ao redimensionar/mudar piso. Não reposicionar/alterar carro ou renders. Ver ALARME-CAVE.md, testes de alarm e basement-layout, e fixtures estritamente fictícias.
+
+# Ventoinha da cave — 1.53
+
+fan opcional {deviceId,channel}, null para remoção explícita. Migração única validada para ID pedido 8819dc/canal0, preservando política de credenciais; nunca atuar ao guardar/carregar/importar. Mesmo transporte, geração, consultas e polling de confirmação. Estado real booleano relays/switch exato, fresco45s, sem inferência de consumo nem atualização otimista. Animação apenas ON confirmado, parar em desconhecido/offline/stale. Excluir grupos de luzes, cenários/reset e alarme. Banner fan arrastável/backup via basement-layout; ícone SVG visto de cima, sem pés. Ver VENTOINHA-CAVE.md e tests/fan.test.cjs. Testes só com mocks.
+
+# Temperatura da cave — 1.54
+
+sensorBindings aceita cellar com type opcional environment/door-window2. Door Window 2 (SHDW-2 ou tipo explicitamente associado) lê tmp no componente0 sem exigir humidade. Preservar a exclusão da temperatura interna de relés genéricos, validade, erros e ausência de valores. Migração única associa ID pedido 7dc19d, componentes0, só leitura, com marcador booleano casa-nl-cellar-temperature-added-v1 incluído/validado no backup; preservar associação existente e permitir retirar sem voltar a adicionar. Mesma conta, fila, lotes e polling dos sensores. Banner Cave mostra temperatura, traço quando inválida e Última leitura em offline/erro/stale. Popup mostra temperatura/bateria/qualidade/hora da consulta, sem humidade inventada e sem confundir contacto da porta com este sensor. Atualizar dados consulta porta e sensor; atalho Sensor de temperatura abre Sensores/Cave. Ver cellar-temperature.js e fixture cellartemp=online/offline/invalid, exclusivamente fictícia.
+
+# Diagnóstico do gateway da porta — 1.56
+
+ID e465b8b9c64c indicado como possível gateway, não confirmado. door-gateway.js acrescenta verificação explícita só de leitura no grupo Porta de entrada. Não migrar BLU para gateway nem supor componente200. Campo de diagnóstico temporário, associação/config/backup anteriores intactos. CasaShelly.inspectDoorGateway usa conta/fila/geração existentes, valida ID hexadecimal, bloqueia configuração suja e só chama status/get. DoorCore.inspectGateway devolve dados mínimos (online/ausente/componentes BTHome, número/booleano/últimoevento); não infere contacto de valor ou nome. Confirmar obj_id45 no gateway antes de associação BTHome manual. Sem criação/configuração de componentes nem atuação. Testes fictícios; estado real continua por verificar.
+
+# Estado BLU window.open — 1.57
+
+DoorCore.status deve aceitar window:N.open além de value legado; false explícito nunca cai num fallback. Se ambos presentes e divergentes/inválidos, manter unknown. Preservar guardas offline/erros/stale/canal e estado/render fechado por omissão. Não substituir o ID BLU pelo gateway só porque este está online. Sensor original funciona na app oficial segundo o utilizador; diagnóstico gateway sem BTHome. Não alegar teste real: regressões com mocks incluem formato open true/false e XB. InspectSensor/inspectDoorSensor e botão Verificar sensor BLU são só leitura, pela mesma fila/conta/geração, com dados mínimos e sem segredos/valores arbitrários. Ver PORTA-ENTRADA.md.
+
+# Diagnóstico BLU também na cave — 1.58
+
+inspectDoorSensor(doorId='entrance') aceita apenas entrance/cellar; cave usa config.cellarDoor e nunca recorre ao ID da entrada quando não associada. Botões e resultados de diagnóstico únicos em ambos os grupos. Preservar normalizador window.open, renders e polling comuns; nenhuma migração/cópia de IDs ou gateway entre portas. Testes de seleção de ID e interface sempre fictícios.
+
+# Popup da consola de televisão — 1.59
+
+media.js/media.css e assets/multimedia-sala.png reutilizam integralmente a imagem fornecida pelo utilizador, sem edição do render da planta. Botão #open-media-console sobre a consola (x310..447/y803..846 nas coordenadas1024x1536), acesso no popup da sala via CasaMedia.decorateRoom e nos Controlos gerais. Popup #media-dialog responsivo, imagem inteira sem recorte e fechar acessível, integrado antes de meteo.js para preservar inert/navegação existente. Estados Ligada/Ligado estão impressos na imagem e são explicitamente ilustrativos; não inferir leituras reais, associar IDs nem enviar comandos. A imagem e os rótulos não são ainda controlos de equipamentos. Preservar associação futura independente de luzes/estores. Verificação iPad vertical820x1180 e desktop, zero comandos na fixture; prova review/multimedia-sala-1.59.png.
+
+# Associações da sala e IDs reservados do escritório — 1.60
+
+Utilizador corrigiu os primeiros quatro IDs: pertencem ao escritório, não à sala. Preservar officeBindings (monitor441db8, apollo e43ad8, terramaster e9df12, blackdrive bb8ac4; canal0) só para guardar/backup/edição futura, sem consulta/controlo pelo popup atual. mediaBindings da sala: tv437c82, soundbar4359bb, playstation435aa1, vodafone e465b8b9c64c, unifi e465b84553bc, canal0 editável. Defaults apenas em campos ausentes, não substituir edições/remover{}; campos opcionais continuam compatíveis e validados no backup. Proibir saídas duplicadas entre todos os atuadores, permitir gateway/contacto só de leitura partilhar ID.
+
+Banners da imagem deixam de ser referências: HTML cobre os textos/estados impressos e pontos, mostrando só energia do relé confirmado. Não chamar a energia estado operacional da TV/consola/router. MC.IDS só admite os cinco da sala, MC.OFFICE_IDS guardados separadamente; deviceIds exclui escritório. Fila/credenciais/geração/polling comuns; sem estado otimista, retry, ligação automática ou participação em cenários/reset/grupos. Popup cabe sem scroll em iPad820×1180 e768×1024 com cabeçalho, imagem e painel fixos. Ver MULTIMEDIA.md, tests/media.test.cjs e fixtures fictícias; não acionar dispositivos reais em testes.
+
+# Consumos na multimédia — 1.61
+
+mediaReadings[id].meter usa EV.meterStatus no mesmo ID/canal, auto sem ambiguidade, na consulta já existente. MC.state powerWatts/energyKWh só com medidor válido online, sem erros e fresco45s; null/Não disponível quando ausente/inválido/offline/stale, preservar zero medido sem o inferir de OFF. BannersW e painelW/kWh acumulados, sem alegar período de consumo. Preservar relé separado de medição, IDs/canais/backup e escritório reservado. Popup continua sem scroll em768×1024. Testes de media e fixture medianometer/mediainvalid/media=offline; só simulação.
+
+# TV e PS5 pelo consumo — 1.62
+
+Nova instrução explícita do utilizador substitui a regra puramente relé apenas paraTV/PS5:0W real=off;Wpositivos=on; ausente/inválido/negativo/offline/stale=unknown. MC.activityFromPower e snapshot.activity não alteram snapshot.on nem comandos/guardas de relé. UI mostra Ligada/Desligada e Relé separado no painel. SVG nativo TVpreta e PS5LEDsoff/onazul, bitmap/fotografia intactos; unknown visual neutro sem emissão com legendaPorconfirmar. Nenhuma atuação automática por potência. Watts pequenos não devem arredondar para0 e contradizer atividade. Outros dispositivos/escritório permanecem como antes. Ver MULTIMEDIA.md e testes fictícios.
+
+# Limiar de standby da TV — 1.63
+
+Por pedido do utilizador, TV off com0..4W inclusive e on apenas>4W. MC.activityThreshold('tv')=4 aplicado por mediaSnapshot. PS5 continua>0W. Não aplicar limiar às leituras exibidas nem comutar relés automaticamente. Unknown mantém guardas anteriores. Ver testes de fronteira e snapshot em media.test.cjs.
+
+# Iluminação da consola — 1.64
+
+Render alternativo assets/multimedia-sala-luz-apagada-v1.png, gerado com imagegen incorporado a partir do original. Candeeiro e LEDs da consola seguem só a luz living: estado booleano real válido online sem erros e recente45s; sem associação usar a simulação da divisão. Unknown usa render sem emissão e legenda por confirmar. TV/PS5 mantêm estados independentes pelo consumo. Não enviar comandos ao abrir/trocar render; mesma conta/consulta. Prompt em MULTIMEDIA-RENDER.md.
+
+# Secretária do Gui — 1.65
+
+office.js reutiliza integralmente assets/secretaria-gui.png fornecida pelo utilizador; sobrepor HTML aos quatro banners e cabeçalho impressos. Desenho SVG visto de cima na área marcada do quarto bedroom2, botão #open-office-desk; acessos também no popup do quarto e Controlos gerais. Popup completo sem scroll em iPad768×1024 e820×1180.
+
+A instrução atual ativa officeBindings anteriormente reservados: monitor441db8, apollo e43ad8, terramaster e9df12, blackdrive bb8ac4, canais editáveis. Não mover para mediaBindings nem reescrever associações existentes. deviceIds inclui escritório, com lotes até10 e mesma conta/fila/geração. mediaSnapshot normaliza ambos, commandMedia só aceita sala e commandOffice só escritório. Estado/consumo válido online fresco45s; não inventar zeros nem estado operacional. Comandos explícitos set/switch, confirmar por leitura/polling comum, sem retry/otimismo; nunca grupos/cenários/reset. Abrir/guardar/importar só lê. Informar que cortar corrente ao servidor/disco requer encerramento pelo sistema. Ver SECRETARIA-GUI.md e fixture office=normal/offline/unknown; nunca testar equipamentos reais.
+
+# Associação explícita dos IDs do Gui — 1.66
+
+Nova autorização para preencher também officeBindings vazio/parcial: MC.associateOffice completa só papéis em falta com os quatro IDs fornecidos/canal0, preservando edições. Migração única casa-nl-gui-ids-associated-v1 booleana incluída/validada no backup; guardar marcador só após config válida e persistência. Depois de concluída, permitir remoção sem voltar a adicionar. Mesma política de credenciais e validação de saídas duplicadas. Apenas consulta, nunca comando na associação.
+
+# Secretária acompanha a iluminação — 1.67
+
+CasaOffice.syncPlan lê darkness/electricOpacity do quarto bedroom2, as mesmas funções/ciclo drawRoomLighting da planta. Escurecimento proporcional da secretária SVG com estores/luz diurna/noite; luz elétrica devolve brilho e ligeiro tom quente. Sem hover que volte a iluminar o móvel e com movimento reduzido respeitado. Sem alterações a estados/comandos, popup, imagens ou paredes.
