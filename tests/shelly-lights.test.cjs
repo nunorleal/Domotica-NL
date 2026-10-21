@@ -53,3 +53,10 @@ test('when both output families exist at the selected channel, the configured ty
  for(const type of ['switch','light']){const d=C.lightStatus({online:1,status},{type,channel:0});assert.equal(d.resolvedType,type);assert.equal(d.on,type==='light');assert.equal(d.detected,false)}
  const d=C.lightStatus({online:1,status:{'light:0':true,lights:[null]}},{type:'switch',channel:0});assert.equal(d.hasOutput,false);
 });
+
+test('supplied room lamp IDs restore the exact three roles without overwriting channel/type of the same device',()=>{
+ const C=require('../shelly-core.js'),expected={master:{deviceId:'98cdac1df7e9',channel:0,type:'switch'},bedroom2:{deviceId:'98cdac1f18fa',channel:0,type:'switch'},living:{deviceId:'98cdac2d2eb6',channel:0,type:'switch'}};
+ assert.deepEqual(C.suppliedLightBindings(),expected);assert.deepEqual(C.suppliedLightBindings({bedroom2:{deviceId:'abcdef',channel:1,type:'light'}}),expected);
+ assert.deepEqual(C.suppliedLightBindings({master:{deviceId:'98CDAC1DF7E9',channel:2,type:'light'}}),{...expected,master:{...expected.master,channel:2,type:'light'}});
+ const c=C.config({schemaVersion:1,server:'',authKey:'',rememberKey:false,bindings:{kitchen:{deviceId:'abcdef',channel:0}},lightBindings:C.suppliedLightBindings()});assert.deepEqual(c.lightBindings,expected);assert.equal(c.bindings.kitchen.deviceId,'abcdef');
+});
