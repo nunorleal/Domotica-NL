@@ -1,4 +1,5 @@
 import { bridge, openCasaSettings } from "./bridge";
+import { RealTemperature } from "./RealTemperature";
 import { useShellyLamp } from "./useShellyLamp";
 import { assetUrl } from "./assets";
 import { APP_VERSION } from "./app-info";
@@ -372,6 +373,7 @@ export default function App() {
                 <div className="temperature">
                   {tempText(w.current.temperature_2m)}
                 </div>
+                <RealTemperature unit={prefs.temp} />
                 <div className="condition">
                   <h2>{description(w.current.weather_code)}</h2>
                   <p>Sensação de {tempText(w.current.apparent_temperature)}</p>
@@ -384,6 +386,7 @@ export default function App() {
               </div>
             </div>
           )}
+          {!w && <RealTemperature unit={prefs.temp} />}
           <div className="sun-times">
             <span>
               <Sunrise size={17} />

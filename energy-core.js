@@ -9,7 +9,8 @@
   return {missing:!device,online:device?.online===1||device?.online===true,hasMeter:!!c,valid,powerKW:p===null?null:p/1000,reactiveKVAR:q===null?null:q/1000,apparentKVA:p===null||q===null?null:Math.hypot(p,q)/1000,voltage:voltage!==null&&voltage>0?voltage:null,energyKWh:total!==null&&total>=0?total/1000:null};
  }
  function state(c,r,now=Date.now()){const b=binding(c),limit=(c.homeEnergy||DEFAULT).contractKVA,fresh=!!(r?.online&&!r.error&&r.valid&&Number.isFinite(r.fetchedAt)&&now>=r.fetchedAt&&now-r.fetchedAt<=45000),power=fresh?r.powerKW:null,apparent=fresh?r.apparentKVA:null,ratio=apparent===null?null:apparent/limit;
-  return {configured:!!b,fresh,powerKW:power,apparentKVA:apparent,contractKVA:limit,ratio,percent:ratio===null?null:ratio*100,remainingKVA:apparent===null?null:Math.max(0,limit-apparent),level:ratio===null?'unknown':ratio+1e-12>=1?'over':ratio+1e-12>=.95?'red':ratio+1e-12>=.8?'orange':ratio+1e-12>=.6?'yellow':'green',energyKWh:r?.energyKWh??null,energyStale:!!r&&!fresh,voltage:fresh?r.voltage:null,channel:b?.channel??(c.homeEnergy||DEFAULT).channel};
+  const lastReading=b&&r?.valid&&r.hasMeter&&Number.isFinite(r.fetchedAt)&&[r.powerKW,r.apparentKVA,r.energyKWh].some(Number.isFinite)?{powerKW:number(r.powerKW),apparentKVA:number(r.apparentKVA),energyKWh:number(r.energyKWh),voltage:number(r.voltage),fetchedAt:r.fetchedAt}:null;
+  return {configured:!!b,fresh,lastReading,powerKW:power,apparentKVA:apparent,contractKVA:limit,ratio,percent:ratio===null?null:ratio*100,remainingKVA:apparent===null?null:Math.max(0,limit-apparent),level:ratio===null?'unknown':ratio+1e-12>=1?'over':ratio+1e-12>=.95?'red':ratio+1e-12>=.8?'orange':ratio+1e-12>=.6?'yellow':'green',energyKWh:r?.energyKWh??null,energyStale:!!r&&!fresh,voltage:fresh?r.voltage:null,channel:b?.channel??(c.homeEnergy||DEFAULT).channel};
  }
  return {DEFAULT,config,binding,status,state};
 });

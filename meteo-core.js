@@ -19,6 +19,7 @@
    if(!valid)throw Error('Preferências MeteoNL inválidas.');result[k]=v;
   }return result;
  }
+ function realTemperature(binding,reading,now=Date.now()){const configured=!!binding,value=reading?.temperature,temperature=configured&&typeof value==='number'&&Number.isFinite(value)&&value>=-100&&value<=150?value:null,fresh=temperature!==null&&reading.online&&!reading.error&&Number.isFinite(reading.fetchedAt)&&now>=reading.fetchedAt&&now-reading.fetchedAt<=120000;return {configured,temperature,status:!configured?'unconfigured':!reading?'pending':temperature===null?'unavailable':fresh?'current':'last'}}
  async function lampAction(s,settings){
   if(!s)return;
   const lamp=s.lampSnapshot('master');
@@ -27,5 +28,5 @@
   if(!lamp.ready||!lamp.state){await s.refresh({quiet:true});return}
   await s.commandLight('master',!lamp.state.on);
  }
- return {idle,preferences,lampAction,screensaver};
+ return {idle,preferences,lampAction,screensaver,realTemperature};
 });

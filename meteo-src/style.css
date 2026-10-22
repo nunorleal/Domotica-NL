@@ -1567,3 +1567,6 @@ button:disabled {
 
 .shared-settings-button {display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;border:1px solid #ffffff30;border-radius:12px;background:#ffffff12;color:inherit;font:inherit;cursor:pointer;}
 .shared-settings-button:hover {background:#ffffff22;}
+
+/* The Shelly measurement stays secondary to the city forecast. */
+.real-temperature{display:flex;align-items:baseline;flex-wrap:wrap;gap:3px 8px;margin:5px 0 8px;font-size:13px;line-height:1.3;color:#ffffffe0;letter-spacing:0}.real-temperature>span{font-size:12px;font-weight:450;color:#ffffffb8}.real-temperature>strong{font-size:20px;font-weight:550;letter-spacing:-.3px;font-variant-numeric:tabular-nums}.real-temperature>small{font-size:10px;color:#ffffffb8}.real-temperature[data-status=last]{color:#fff4d6}@media(max-width:600px){.real-temperature>strong{font-size:18px}.real-temperature{margin-bottom:6px}}

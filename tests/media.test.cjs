@@ -36,7 +36,7 @@ test('TV standby threshold is four watts, inclusive when off; PS5 retains its ze
  assert.equal(M.activityFromPower(.1,M.activityThreshold('playstation')),true);assert.equal(M.activityFromPower(null,tv),null);
  const r={online:true,hasOutput:true,on:true,errors:[],fetchedAt:100,meter:{online:true,hasMeter:true,power:4,energyKWh:1,errors:[]}};
  assert.equal(M.state(bindings.tv,r,101,tv).activity,false);assert.equal(M.state(bindings.tv,{...r,meter:{...r.meter,power:4.01}},101,tv).activity,true);assert.equal(M.state(bindings.tv,r,50000,tv).activity,null);
- const fs=require('node:fs'),vm=require('node:vm'),src=fs.readFileSync(require.resolve('../shelly.js'),'utf8'),start=src.indexOf(' function mediaBinding('),end=src.indexOf(' function mediaEnsureFresh(',start),context={MC:M,config:{mediaBindings:bindings,server:'test'},mediaReadings:{tv:{...r,fetchedAt:Date.now()}},busy:false,commandCount:0,groupBusy:false,lightGroupBusy:false,mediaTargets:new Map(),dirty:()=>false,key:'FAKE',mediaMessages:new Map()};vm.createContext(context);vm.runInContext(src.slice(start,end),context);assert.equal(context.mediaSnapshot('tv').activity,false);
+ const fs=require('node:fs'),vm=require('node:vm'),src=fs.readFileSync(require.resolve('../shelly.js'),'utf8'),start=src.indexOf(' function mediaBinding('),end=src.indexOf(' function mediaEnsureFresh(',start),context={MC:M,config:{mediaBindings:bindings,server:'test'},mediaReadings:{tv:{...r,fetchedAt:Date.now()}},blockingRead:()=>false,busy:false,commandCount:0,groupBusy:false,lightGroupBusy:false,mediaTargets:new Map(),dirty:()=>false,key:'FAKE',mediaMessages:new Map()};vm.createContext(context);vm.runInContext(src.slice(start,end),context);assert.equal(context.mediaSnapshot('tv').activity,false);
 });
 
 

@@ -45,7 +45,8 @@
   const feed=ev.relay&&canControl(r,now)?r.on:null;
   const charging=typeof power==='number'?power>(ev.thresholdWatts??50):null;
   const energy=typeof total?.energyKWh==='number'?total.energyKWh:null;
-  return {configured:ROLES.some(k=>!!ev[k]),powerKW:typeof power==='number'?power/1000:null,energyKWh:energy,energyStale:energy!==null&&!fresh(total,now),feed,charging,inconsistent:charging===true&&feed===false,canControl:!!ev.relay&&canControl(r,now)};
+  const lastReading=ev.meter&&m?.hasMeter&&Number.isFinite(m.power)&&Number.isFinite(m.fetchedAt)?{powerKW:m.power/1000,fetchedAt:m.fetchedAt}:null;
+  return {lastReading,configured:ROLES.some(k=>!!ev[k]),powerKW:typeof power==='number'?power/1000:null,energyKWh:energy,energyStale:energy!==null&&!fresh(total,now),feed,charging,inconsistent:charging===true&&feed===false,canControl:!!ev.relay&&canControl(r,now)};
  }
  return {TYPES,ROLES,config,meterStatus,relayStatus,fresh,canControl,state};
 });

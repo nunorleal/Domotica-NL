@@ -47,7 +47,7 @@
    const now=performance.now();if(now-wheelAt>350||Math.sign(wheel)!==Math.sign(e.deltaY))wheel=0;wheelAt=now;wheel+=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?view.clientHeight:1);
    if(Math.abs(wheel)<65)return;const next=CasaFloorsCore.destination(floor,wheel);if(next!==floor){e.preventDefault();setFloor(next)}
   },{passive:false});
-  view.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!e.isPrimary||blocked()||e.target.closest('.room-pin,.blind-pin,.basement-movable'))return;touch={id:e.pointerId,x:e.clientX,y:e.clientY}});
+  view.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!e.isPrimary||blocked()||e.target.closest('.room-pin,.blind-pin,.basement-movable,.heater-object,.dehumidifier-object'))return;touch={id:e.pointerId,x:e.clientX,y:e.clientY}});
   view.addEventListener('pointerup',e=>{if(!touch||touch.id!==e.pointerId)return;const start=touch;touch=null;if(blocked()||performance.now()<lockedUntil)return;const next=CasaFloorsCore.swipe(floor,e.clientX-start.x,e.clientY-start.y);if(next!==floor){suppressClickUntil=performance.now()+700;setFloor(next)}});
   view.addEventListener('pointercancel',()=>{touch=null});
  }

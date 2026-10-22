@@ -19,7 +19,7 @@
  $('backup-file').addEventListener('change',async()=>{
   const file=$('backup-file').files[0];if(!file)return;
   try{
-   if(file.size>CasaBackup.MAX_BYTES)throw new Error('O ficheiro deve ter no máximo 2 MB.');
+   if(file.size>CasaBackup.MAX_BYTES)throw new Error('O ficheiro deve ter no máximo 8 MB.');
    pending=CasaBackup.parse(await file.text());
    // Reject room centres outside their respective floor polygons.
    for(const [id,r]of Object.entries(pending.data['casa-nl-room-layout-v1']))if(!BannerGeometry.rectFits(roomPolygons(id),{x:r.lx*10.24,y:140+r.ly*11.8},1,1))throw new Error('O ficheiro contém uma posição de divisão inválida.');

@@ -1,0 +1,33 @@
+/* Shared instantaneous and accumulated readings. */
+.device-consumption{margin:18px 0;color:#294f6b;min-width:0}
+.consumption-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.device-consumption h3{font-size:14px;margin:0}
+.consumption-quality{font-size:10px;color:#608099}
+.consumption-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 14px}
+.consumption-metrics>div{padding:13px;border:1px solid #a6c4d43b;border-radius:16px;background:#89abc415;min-width:0}
+.consumption-metrics span{display:block;font-size:11px;color:#63849c;margin-bottom:8px}
+.consumption-metrics strong{font-size:clamp(18px,3vw,27px);line-height:1.2;overflow-wrap:anywhere}
+.consumption-alarm-source{width:100%;min-height:40px;padding:6px;color:#294f6b;background:#edf3f7;border:1px solid #cad9e3;border-radius:9px}
+.kitchen-device-meters,.media-meter-summary,.ev-metrics{display:none!important}
+#energy-dialog .energy-grid>div:nth-child(1),#energy-dialog .energy-grid>div:nth-child(3){display:none}
+.heater-popup .heater-preview,.dehumidifier-popup .dehumidifier-preview{height:90px;width:90px;margin-bottom:8px}
+.media-control-panel .device-consumption{margin:8px 0}
+.media-control-panel .consumption-metrics{margin:8px 0;gap:8px}
+.media-control-panel .consumption-metrics>div{padding:9px 12px}
+.media-control-panel .consumption-metrics strong{font-size:21px}
+.media-control-panel{max-height:48dvh;overflow-y:auto}.media-scene{min-height:180px}
+#heater-dialog,#dehumidifier-dialog,#kitchen-device-dialog,#energy-dialog,#ev-dialog,#alarm-dialog,#fan-dialog{max-height:calc(100dvh - 28px);overflow-y:auto}
+.device-control-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.device-control-actions .secondary-action{min-width:44px;width:44px;height:44px;min-height:44px;flex:none;padding:8px;font-size:24px;border-radius:12px;line-height:1}
+.popup .portable-device-actions{flex:none;gap:8px}
+.popup .portable-device-actions>button{display:inline-flex;align-items:center;justify-content:center;flex:none;width:48px;min-width:48px;height:48px;min-height:48px;padding:11px;border-radius:50%;line-height:1}
+.popup .portable-device-actions>button.secondary-action{border:1px solid #9eb8ca66;background:#8baac01c;color:#426b89}
+.popup .portable-device-actions>button svg{width:24px;height:24px}
+.portable-device-actions>button:focus-visible{outline:3px solid #87b8d8;outline-offset:3px}
+.heater-popup .detail-row,.dehumidifier-popup .detail-row{gap:10px}
+.heater-popup .detail-row h3,.dehumidifier-popup .detail-row h3{font-size:14px}
+.heater-popup .detail-row p,.dehumidifier-popup .detail-row p{font-size:11px}
+.heater-popup #heater-message:empty,.dehumidifier-popup #dehumidifier-message:empty{display:none}
+@media(max-width:420px){.consumption-metrics>div{padding:10px}.consumption-metrics strong{font-size:19px}.consumption-quality{max-width:45%;text-align:right}}
+
+svg.ui-icon{display:block;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transform:none}.media-utility>button,.kitchen-device-actions>button,#weather-refresh{display:inline-flex;align-items:center;justify-content:center}
