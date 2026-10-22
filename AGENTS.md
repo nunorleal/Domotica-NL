@@ -207,3 +207,103 @@ Utilizador voltou a fornecer os IDs: master98cdac1df7e9, bedroom298cdac1f18fa, l
 # IDs confirmados das portas — 1.74
 
 Utilizador corrigiu a porta da cave para XB106582486435511; entrada mantém XB66172384118439. DoorCore.suppliedBindings aplica os dois IDs distintos como BLU, componente0 por omissão, preservando componente do mesmo sensor já guardado. Migração única casa-nl-door-ids-restored-v1 validada/exportada no backup; preservar restante conta/config, permitir edição/remoção posterior sem reaplicar. Apenas consultar contactos; não alterar renders, gateways, estores ou atuadores. Fixtures excluem a migração dos IDs reais.
+
+# Temperatura da varanda — 1.75
+
+Adicionar balcony a sensorBindings/SENSOR_ROOM_IDS com ID fornecido10521c0752cc; componente temperatura0 e humidade0 por omissão, preservando componentes existentes para o mesmo ID. Migração única casa-nl-balcony-sensor-added-v1 validada/exportada no backup. Banner varanda mostra só temperatura em°C e Por consultar/Indisponível/Última leitura quando aplicável, sem humidade inventada; mantém contenção, arrastamento e preferência de ocultação dos banners. Sensores/Varanda e popup usam normalização ambiente e transporte partilhados, sem comandos. Fixtures usam ID falso; ver teste sensors e cenário balcony=online/offline/invalid.
+
+O banner Varanda com sensor usa padding compacto. fitBanner mantém contenção e, se houver sobreposição com o estore da cozinha, procura posição acima dentro do polígono da varanda. Não mover o banner do estore nem alterar a sua associação.
+
+# Temperatura Real na MeteoNL — 1.76
+
+Leitura secundária Real por baixo da temperatura meteorológica, sem nome Varanda. RealTemperature.tsx lê só a ponte CasaMeteoBridge.realTemperature; mesma conta/sensorBindings.balcony/fila partilhada, sem novos IDs/credenciais/transportes em MeteoNL. Respeitar C/F, decimal1; ocultar se não associado, indicar Por consultar/Indisponível/Última leitura sem inventar zero. Mostrar também se previsão falhar. Ponte devolve só configured/temperature/status; dados recentes120s, erro/offline/stale com valor=última leitura. Abrir MeteoNL e minuto visível renovam sensor pela ensureFresh existente, nunca comandos.
+
+# Banners azuis translúcidos — 1.77
+
+blue-glass.css, carregado depois dos estilos dos componentes, aplica a paleta azul translúcida às divisões, estores, energia, cave e multimédia. Preservar dimensões, posições, arrastamento, contraste e cores semânticas de consumo/alarme/alimentação. Não alterar renders nem leituras ou comandos. Manter o sombreado verde de hover da TV/secretária solicitado anteriormente.
+
+# Tipografia azul dos menus — 1.78
+
+A paleta de blue-glass.css abrange também títulos, texto secundário, ícones e botões neutros dos popups e definições. Texto azul escuro sobre superfícies claras; manter cores semânticas de erros, estados, alarmes e botões de alimentação.
+
+# Botão único de alimentação — 1.79
+
+EV, ventoinha e armação do alarme usam CasaPowerButton: botão único verde em estado confirmado ativo, transparente/cinzento inativo, âmbar bloqueado se desconhecido. Clique relê snapshot e envia inverso booleano explícito apenas com canControl, sem busy/pending; sem alteração otimista. EV expõe pending e bloqueia enquanto espera confirmação. Luzes das divisões mantêm lógica existente com ícone de energia e cor verde ligada. Multimédia/secretária mantêm botão único e passam a fundo transparente inativo. Não fundir ações coletivas nem Abrir/Parar/Fechar estores.
+
+# Termoventilador móvel — 1.80
+
+Configuração opcional heater independente de fan, associada uma vez ao ID fornecido ea9d29/canal0 por casa-nl-heater-added-v1. Usar conta/fila/geração/consultas partilhadas. Estado confirmado fresco, botão único, booleanos explícitos e pending próprio; nenhum comando por arrastamento, configuração, leitura ou cenário. heater-form.js antes de shelly.js, heater-core.js antes de backup-core.js, heater.js depois de power-button.js. Backup valida associação, marcador e casa-nl-heater-layout-v1 e preserva o papel ausente em importações antigas.
+
+Os dois sprites ImageGen com transparência em assets/termoventilador-*-v1.png mantêm vista ortográfica de cima; a mistura acompanha a iluminação da divisão atribuída, sem tocar nos renders da planta. Arrastar entre divisões do piso0 guarda {room,x,y}; validar contenção no destino, reverter se inválido, suprimir clique pós-arrastamento. Preservar teclado e seletor de divisão no popup. Ver TERMOVENTILADOR.md e fixture heater=off/on/unknown/offline só com IDs falsos.
+
+# Desumidificador móvel — 1.81
+
+Papel opcional dehumidifier separado de heater/fan; ID confirmado88d798/canal0 por omissão. Não guardar nem tentar corrigir o valor inicial inválido86/P88. Migração única casa-nl-dehumidifier-added-v1, conta/fila/generation/consultas e comandos booleanos explícitos partilhados. Estado recente confirmado, pending próprio e sem repetições automáticas. Nenhum comando ao mover, carregar, guardar ou em cenários/luzes gerais. Consulta visual não cria polling Cloud adicional.
+
+dehumidifier-core.js valida posição inicial bath1(165,254) e layout portátil casa-nl-dehumidifier-layout-v1; sprites diurno/noturno vistos de cima e independentes da planta, seguem a iluminação da divisão. Preservar arrastamento entre divisões, contenção, cancelamento e teclado. Backup inclui papel, posição e marcador e preserva associações ausentes em ficheiros antigos. Definições e popup seguem o mesmo fluxo do termoventilador. Fixture usa só ID falso deadbeefab02. Ver DESUMIDIFICADOR.md.
+
+# Contorno verde nos aparelhos móveis — 1.82
+
+Retirar a bolinha de heater/dehumidifier. O wrapper *-render recebe contorno verde pela silhueta alfa dos sprites, com drop-shadow, apenas em data-power=on confirmado. Sem contorno em off/unknown; não mudar leituras ou comandos. Hover/foco e arrastamento mantêm os seus indicadores próprios. Não reintroduzir a bolinha nem desenhar um retângulo em torno da área transparente da imagem.
+
+# Contador de pedidos Shelly — 1.83
+
+cloud-activity-core.js antes de shelly.js; cloud-activity.js depois de todas as interfaces Shelly e antes de meteo.js para integrar casa-app. Cápsula no topo e popup são só de leitura. Sem pedidos Cloud adicionais, nem dados de credenciais/IDs/endpoints nos snapshots. Mostrar progresso pelos IDs configurados únicos e lotes reais da atualização; contabilizar transporte por janela. Pronta só após ciclo completo recente, leituras utilizáveis, sem edição suja, erro, fila, envio ou confirmação pendente. Dispositivos offline/saídas/contactos inválidos dão atenção; HTTP429 dá erro, nunca pronto. Não confundir pedido HTTP concluído com estado físico confirmado. Contador não desbloqueia atuadores nem altera polling/retries/intervalos. Validar geração e estados incompletos antes de emitir eventos; resetar ciclo ao guardar conta. Ver ESTADO-SHELLY.md e testes cloud-activity/cloud-transport; fixture apenas com IDs fictícios.
+
+# Aparelhos na planta da cave — 1.84
+
+Ventoinha e alarme deixam de ter cartão azul/rótulos permanentes; cellar-devices.css carregado por último apresenta os gráficos como aparelhos na planta, com sombra própria. Preservar IDs de botões, labels/estados acessíveis e popups, conta/Shellys/comandos, dimensões mínimas44px e posições no backup existente. Ventoinha usa SVG existente; ON confirmado = auréola verde na caixa e só as pás rodam. OFF/unknown sem verde/rotação. Alarme usa novo corpo vetorial circular local com a auréola existente: verde armado, vermelho orbitante/pulsante se disparado, sem auréola desarmado, âmbar desconhecido/parcial. Preservar movimento reduzido. Não voltar a aplicar azul/blur/bordas de cartão a estes dois elementos, nem criar polling para animações. Ver APARELHOS-CAVE.md.
+
+# Fluidez da comunicação e cozinha — 1.85
+
+Por novo pedido explícito do utilizador, a consulta geral passa a 30 s após conclusão, removendo o ciclo redundante dos sensores. Os controlos com dados recentes não ficam bloqueados por consultas de fundo; diagnósticos, comando em envio, confirmação do próprio aparelho, configuração suja e pausa 429 continuam protegidos. Comandos invalidam o ciclo de leitura anterior por readEpoch; não aplicar resultados pré-comando, nem enviar os restantes lotes antes do comando. Revalidar geração/frescura à saída da fila. Confirmação e painéis usam consultas por IDs deduplicados que só atualizam os aparelhos solicitados. Nunca fazer retry de atuação. HTTP429 impõe pausa 30..120s; não acumular pedidos durante essa pausa. Disponível em segundo plano não significa estado físico confirmado de um comando pendente. Ver FLUIDEZ-SHELLY.md; esta mudança atualiza as regras de polling/contador anteriores conforme o pedido atual.
+
+Grupo opcional kitchenBindings com dishwasher e465b8b1526c, washer 485519eb7022, boiler bc1c2a, canais iniciais0 editáveis. Mesmo validador, fila, snapshot de relé/consumo e backup; nunca incluir em iluminação/cenários. Migração única preserva personalizações e remoções posteriores. Manter grupos e equipamento colapsáveis, aviso de ID em falta, preservação de grupos nos backups antigos. Na planta, apenas hit areas transparentes sobre L/R/C: sem ícones, novos renders ou alterações aos píxeis. Realce no hover/foco, popup com alimentação confirmada e medições reais; ON não significa máquina em programa ou caldeira a aquecer. Ver COZINHA.md. Testes exclusivamente com IDs/chave fictícios e todas as rotas Cloud intercetadas.
+
+# Símbolo de atividade das máquinas — 1.86
+
+Por pedido do utilizador, dishwasher/washer mostram um pequeno símbolo verde de máquina sobre o aparelho só com potência válida e recente >10W. Em 10W ou menos não mostrar símbolo em planta; no popup indicar Sem atividade. Offline/ausente/erro/desatualizado = Atividade por confirmar, sem animação. Tambor com rotação discreta e movimento reduzido respeitado. O estado da alimentação continua booleano e independente; não controlar o relé pelo consumo. Não aplicar o limiar à caldeira, TV ou outros aparelhos. Os renders continuam intactos e o novo símbolo é apenas uma camada da interface; sem novos pedidos Cloud. Ver COZINHA.md e testes kitchen.
+
+# Atividade da caldeira — 1.87
+
+Por pedido explícito posterior, aplicar também à boiler o limiar >10W anteriormente limitado a dishwasher/washer. Na caldeira usar símbolo próprio de caldeira/chama verde pulsante, mantendo tambor nas máquinas. Símbolo só em planta com atividade elétrica válida; estado textual no popup; nenhuma inferência de temperatura ou chama física, comando automático ou novo polling. Esta regra substitui a exclusão da caldeira na instrução 1.86. Preservar validade, controlo independente da alimentação e movimento reduzido.
+
+# Prioridade de comandos e fim das confirmações — 1.88
+
+O pedido atual exige eliminar confirmações permanentes e refresh manual recorrente. confirmation-core.js define tickets individuais: relés/luzes até3 consultas de estado (esperas1,5/4/10s, prazo30s); estores até5 (1,5/4/8/12/16s, prazo60s). Não renovar tickets anteriores com outro comando; sequência/alvo novo substitui só o próprio estore. Confirmar apenas com leitura válida posterior ao comando; nos estores aceitar movimento na direção correta sem dizer que chegou ao alvo. Expiração remove efetivamente todos os mapas/escalares de pendentes, mostra Comando sem confirmação e conserva o estado reportado. Nunca repetir atuações automaticamente.
+
+Comandos abortam apenas leituras HTTP em curso via cancelStatus; não abortar atuações. Confirmar tem prioridade sobre frota e painéis em espera. Cancelamento por prioridade não é falha de rede. Aplicar lotes de leitura individualmente, guardando geração/epoch após cada await; falhas posteriores não invalidam lotes anteriores. Regresso à app/rede antecipa leitura normal sem exigir refresh. A consulta geral continua30s após conclusão, com pausa429 e validação individual preservadas. Estas instruções atualizam os antigos intervalos e prazo90s por pedido explícito. Ver FLUIDEZ-SHELLY.md e testes confirmation/fluid-requests/cloud-transport. Todos os testes de atuação continuam fictícios.
+
+# Recuperação do limite inicial — 1.89
+
+Por relato do utilizador de pausa imediata e toggle indisponível, substituir o intervalo anterior1,1s por1,5s após conclusão do pedido e usar localStorage/Web Locks para coordenação de janelas na mesma origem/servidor. Pool temporário shelly-cloud-traffic-v2:<server> sem IDs/chave e fora do backup. Web Locks só quando disponíveis; fallback por timestamps partilhados. Não prometer coordenação com outros navegadores/origens/apps.
+
+Não impor30s mínimos após429: respeitar Retry-After válido; sem indicação,2,5s com crescimento5/10/20/40s e reset após sucesso. Manter rejeição de envios durante pausa e nenhuma repetição automática de atuações. Guardar consultas de equipamentos abertos durante pausa em deferredReads, consultar esses IDs prioritariamente ao recuperar, e voltar a guardar se novo429. Limpar ao mudar configuração. Toggle só fica disponível após leitura válida; nunca enfileirar o comando do utilizador com estado desconhecido. No popup do termoventilador explicar a retoma automática e espera. Estas regras atualizam os mínimos/intervalos anteriores por pedido explícito. Ver FLUIDEZ-SHELLY.md e testes cloud-transport/fluid-requests; todas as atuações de teste fictícias.
+
+# Últimas leituras durante pausas — 1.90
+
+Preservar valores previamente recebidos durante falhas/429/expiração: lastReading nos cores de energia, multimédia e EV é só para apresentação, com timestamp original. Exibir Última leitura nos consumos históricos e último booleano dos aparelhos. Estores offline podem mostrar percentagem histórica conhecida com legenda, sem inventar posição inicial. Nunca usar lastReading para desbloquear comandos, calcular carga atual ou animar atividade/carregamento; manter frescura e geração independentes. Não persistir cache adicional nem renovar timestamp numa falha. Testes exclusivamente fictícios. Ver FLUIDEZ-SHELLY.md e tests/last-reading.test.cjs.
+
+# Visibilidade independente dos dados — 1.91
+
+O toggle casa-nl-show-banners controla apenas os nomes das divisões. casa-nl-show-sensor-readings controla temperatura/humidade na planta, por omissão visíveis e com validação booleana opcional no backup. Sem nomes, manter room-pin.has-sensor visível e ocultar só room-pin-name; sem sensor nem nome, ocultar o banner inteiro. Usar os mesmos valores, posições, arrastamento e popups; não duplicar leituras ou criar polling. O consumo conserva o toggle independente casa-nl-show-energy-banner. Os nomes nos controlos, acessibilidade e estores não são apagados.
+
+# Informação elétrica e histórico local — 1.92
+
+consumption-core.js carrega após ev-core e antes de shelly.js/backup-core; consumption.js e consumption.css após os componentes visuais. O bloco reutiliza as mesmas leituras e controlos: potência W (kW para casa/carro), acumulado kWh, qualidade e períodos Diário/Semanal/Mensal/Anual. Não criar polling ou pedidos de histórico Cloud. API pública atual usada não tem histórico documentado nesta integração. Registo local parcial, claramente identificado, por deltas válidos do acumulado com intervalo <=5min; primeira leitura/reset/gap não geram consumo. Zero observado e lacuna são distintos. Não integrar potência nem simular dias anteriores.
+
+Identidade inclui servidor/ID/componente/canal; sem chaves. Limites64 identidades,50 horas,400 dias; gravação diferida e flush antes de exportar/pagehide. Importação cancela persistência antiga depois de restaurar e antes de reload. Backup opcional casa-nl-consumption-history-v1 validado estritamente; ficheiro até8MB para o histórico formatado. Atualiza a regra1.90: há agora histórico persistente separado, exclusivamente para gráficos, nunca cache válido para atuadores. Valores atuais/históricos não controlam relés, alarme, carregamento ou animações. Sensores sem medição elétrica não inventam consumo. Disparo do alarme continua só leitura; seleção do respetivo consumo nunca envia comandos. Preservar popups, render e iPad vertical. Testes/provas exclusivamente na fixture; dados historyproof nunca entram na app normal. Ver CONSUMO.md.
+
+# Popups compactos dos aparelhos móveis — 1.93
+
+Por pedido explícito do utilizador, retirar o seletor Colocar na divisão e respetiva explicação dos popups heater/dehumidifier, incluindo a geração de opções e listener de change. Esta regra substitui a exigência anterior do seletor. A posição/divisão continuam guardadas pelo arrastamento e movimento por teclado já existentes. Não alterar geometria, persistência, iluminação ou comandos.
+
+Alimentação, atualizar e definições ficam na mesma fila portable-device-actions, com botões circulares48px, SVG, título e aria-label. Preservar IDs, listeners e regras de disponibilidade: só alimentação é um toggle e fica verde em ON; os outros são atalhos neutros. consumption.js reutiliza esta fila sem criar wrappers ou deslocar o refresh; restantes equipamentos mantêm o arranjo anterior. Validado nos dois popups em820×1180, sem seletor, refresh e definições funcionais e zero atuações na fixture. Prova review/aparelhos-popup-compacto-1.93.png;209 testes aprovados.
+
+# Retirar gráficos de consumo — 1.94
+
+Por pedido explícito posterior, remover gráficos, períodos e notas de histórico de todos os blocos de consumo. Manter apenas potência instantânea e acumulado do Shelly, qualidade de leitura e os controlos existentes. Não reintroduzir registo local ou séries: shelly.js conserva apenas consumptionReadings em memória e não grava histórico; retirados temporizador/flush/pagehide e hooks do backup. Esta instrução substitui a recolha/gráficos da versão1.92. Preservar compatibilidade de importação dos históricos legados sem os usar ou apagar. Manter os popups compactos1.93, regras de comandos e sinalização Última leitura. Ver CONSUMO.md; prova review/consumo-sem-graficos-1.94.png.
+
+# Ícones uniformes de atualizar e definições — 1.95
+
+Usar exclusivamente icon('refresh') e icon('settings') do catálogo app.js. Refresh é SVG de duas setas simétricas; settings é engrenagem radial de oito dentes centrada em12,12. Ambos usam viewBox24×24, traço1,8, cantos redondos, fillnone e data-ui-icon para identificação. Não voltar a usar glifos Unicode, paths isolados ou o antigo desenho assimétrico. Aplicado aos popups, cozinha, sala, secretária, meteorologia e rodapé; os atalhos criados em consumption.js também usam o catálogo. Preservar cores, IDs, dimensões, labels, listeners e regras de comandos. Validação em fixture/iPad: uma única variante SVG de cada tipo e ícone novo no rodapé, sem erros de consola;209 testes aprovados. Prova review/icones-uniformes-1.95.png.

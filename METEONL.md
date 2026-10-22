@@ -29,3 +29,9 @@ O bundle usa um script clássico IIFE, sem módulos de rede. Em file:// a janela
 ## Tempo do protetor — 1.35
 
 Em Definições → Protetor de ecrã · MeteoNL, escolher 15 ou 30 segundos, 1, 2, 5, 10, 15 ou 30 minutos, ou Desativado. A alteração é imediata, reinicia a contagem e fica guardada automaticamente neste navegador. O valor inicial continua a ser 30 segundos. Desativar só impede a abertura automática; o botão da meteorologia continua disponível. A preferência usa casa-nl-screensaver-v1, incluída e validada na cópia JSON; cópias anteriores continuam compatíveis.
+
+## Leitura Real — 1.76
+
+RealTemperature.tsx apresenta por baixo da temperatura meteorológica a leitura do sensor já associado à varanda, com rótulo apenas Real. Usa CasaMeteoBridge.realTemperature → CasaMeteoCore.realTemperature, sem credenciais, IDs, consulta Cloud ou transporte próprio no iframe. Não interfere com previsão/cidade nem com o botão do candeeiro. Uma casa decimal e unidadeC/F de acordo com as preferências. Sem associação, ocultar; sem leitura, traço e Por consultar/Indisponível; com leitura antiga/offline/erro, identificar Última leitura. Disponível mesmo quando a previsão não carrega.
+
+Abertura/minuto visível renovam o sensor pela ensureFresh da Casa; o componente apenas consulta a ponte a cada segundo. Filtro da ponte expõe só configured/temperature/status, sem segredos ou IDs e sem chamar hora de consulta hora da medição. Teste de qualidade em tests/meteo.test.cjs; 153 testes passaram. Prova visual iPad820×1180 em review/meteo-real-1.76.png usa leitura fictícia18,4°C, com zero comandos a dispositivos.

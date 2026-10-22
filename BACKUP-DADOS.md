@@ -13,3 +13,9 @@ Limite: IDs já ausentes do armazenamento e de todas as cópias não podem ser r
 ## Avisos de IDs — 1.72
 
 Definições gerais e Shelly Cloud mostram aviso vermelho expansível com equipamentos sem ID. Cada nome abre o grupo e foca o campo correspondente sem repor o formulário nem perder edições. Junto ao campo aparece ID em falta; desaparece ao preenchê-lo. Não bloqueia gravação, não exige o contador acumulado EV opcional nem ID próprio para contador geral partilhado com o carro. Verificação visual com fixture: retirar e guardar as3 luzes mostra3 novos avisos e preserva os restantes equipamentos; atalho para candeeiro principal funciona; preencher remove o aviso; zero comandos. Prova review/aviso-ids-em-falta-1.72.png.
+
+## Sensor da varanda — 1.75
+
+Backup passa a aceitar/preservar sensorBindings.balcony, associado ao ID10521c0752cc. Inclui marcador de migração casa-nl-balcony-sensor-added-v1. A bateria/leitura consultada não é uma associação adicional. Teste completo agora inclui33 associações, com os quatro sensores ambientais.
+
+Verificação da varanda: 152 testes passaram, incluindo texto só com temperatura, dados ausentes/offline, associação e backup. Prova visual com sensor fictício em review/varanda-temperatura-1.75.png; zero comandos.
