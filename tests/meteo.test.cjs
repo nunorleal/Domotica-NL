@@ -51,3 +51,11 @@ test('screensaver backup settings accept supported durations and reject malforme
  const C=require('../meteo-core.js');for(const seconds of [0,15,30,60,120,300,600,900,1800])assert.deepEqual(C.screensaver({seconds}),{seconds});
  for(const value of [null,[],{},30,{seconds:'30'},{seconds:-1},{seconds:NaN},{seconds:31},{seconds:30,extra:true}])assert.throws(()=>C.screensaver(value));
 });
+
+test('Real temperature bridge exposes only sensor reading and quality; missing, offline and stale never masquerade as current',()=>{
+ const C=require('../meteo-core.js'),binding={deviceId:'10521c0752cc',temperatureChannel:0},r={online:true,temperature:18.4,fetchedAt:100,authKey:'NEVER-EXPOSE',deviceId:'private'};
+ assert.deepEqual(C.realTemperature(binding,r,101),{configured:true,temperature:18.4,status:'current'});assert.equal(C.realTemperature(binding,{...r,temperature:-3.5},101).temperature,-3.5);
+ for(const bad of [{...r,online:false},{...r,error:true},{...r,fetchedAt:-200000},{...r,fetchedAt:102}])assert.equal(C.realTemperature(binding,bad,101).status,'last');
+ for(const value of [null,undefined,NaN,Infinity,'18',151]){const d=C.realTemperature(binding,{...r,temperature:value},101);assert.equal(d.temperature,null);assert.equal(d.status,'unavailable')}
+ assert.equal(C.realTemperature(binding,null,101).status,'pending');assert.deepEqual(C.realTemperature(null,r,101),{configured:false,temperature:null,status:'unconfigured'});
+});
